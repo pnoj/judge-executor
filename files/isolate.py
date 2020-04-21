@@ -46,7 +46,7 @@ def run(program_path, stdin, time_limit, memory_limit, env=dict(), isolate_dir=N
         with open(os.path.join(isolate_dir, "isolate", "in"), "w") as stdin_file:
             stdin_file.write(stdin)
 
-    execute_command(info.run_command(os.path.join("/app", os.path.basename(program_path))), isolate_dir, "/app", "/app/in", "/app/out", "/app/err", "/app/meta", time_limit, memory_limit, env, verbose=True)
+    execute_command(info.run_command(os.path.join("/app", os.path.basename(program_path))), isolate_dir, "/app", "/app/in", "/app/out", "/app/err", "/app/meta", time_limit, memory_limit, env)
 
     with open(os.path.join(isolate_dir, "isolate", "out"), "r") as stdout_file:
         stdout = stdout_file.read()
