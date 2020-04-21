@@ -10,9 +10,7 @@ COPY --from=0 /usr/local/bin/isolate-check-environment /usr/local/bin/
 COPY --from=0 /usr/local/bin/isolate /usr/local/bin/
 COPY --from=0 /usr/local/etc/isolate /usr/local/etc/
 RUN apk add --no-cache libcap
-RUN apk add --no-cache openjdk11
-ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk
-ENV PATH="$JAVA_HOME/bin:${PATH}"
+RUN apk add --no-cache g++
 WORKDIR /app
 COPY . /app
 RUN pip install --trusted-host pypi.python.org -r requirements.txt

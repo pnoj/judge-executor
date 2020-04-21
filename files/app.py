@@ -37,8 +37,10 @@ def compile():
             return {"status": "CC"}
         except isolate.subprocess.TimeoutExpired:
             return {"status": "CE", "message": "Compilation Timed Out"}
-        except:
+        except isolate.subprocess.CalledProcessError:
             return {"status": "CE", "message": info.compile_error_message(compile_process.stdout, compile_process.stderr)}
+        except:
+            return {"status": "IE", "message": "Internal Error while compiling"}
     except Exception as e:
         return {"status": "CE", "message": "Error while compiling: {0}".format(str(e))}
 
