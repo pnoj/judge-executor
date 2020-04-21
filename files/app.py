@@ -17,27 +17,30 @@ def status():
 
 @app.route('/compile', methods=["POST"])
 def compile():
-    submission_file = request.files["submission"]    
     try:
-        config["submission_content"] = submission_file.read().decode('utf-8')
-    except UnicodeDecodeError:
+        submission_file = request.files["submission"]    
+        try:
+            config["submission_content"] = submission_file.read().decode('utf-8')
+        except UnicodeDecodeError:
+            submission_file.close()
+            return {"status": "CE", "message": "Error while decoding submission"}
         submission_file.close()
-        return {"status": "CE", "message": "Error while decoding submission"}
-    submission_file.close()
-    os.makedirs("submission", exist_ok=True)
-    config["submission_code_path"] = os.path.join("submission", info.name_code(config['submission_content']))
-    with open(config["submission_code_path"], "w") as submission_code_file:
-        submission_code_file.write(config["submission_content"])
-    try:
-        compile_process = isolate.execute_command_subprocess(info.compile_command(config["submission_code_path"]), time_limit=10, check=False)
-        compile_process.check_returncode()
-        config['status'] = 'loaded'
-        config['submission_binary_path'] = os.path.join("submission", info.name_binary(config['submission_content']))
-        return {"status": "CC"}
-    except isolate.subprocess.TimeoutExpired:
-        return {"status": "CE", "message": "Compilation Timed Out"}
-    except:
-        return {"status": "CE", "message": info.compile_error_message(compile_process.stdout, compile_process.stderr)}
+        os.makedirs("submission", exist_ok=True)
+        config["submission_code_path"] = os.path.join("submission", info.name_code(config['submission_content']))
+        with open(config["submission_code_path"], "w") as submission_code_file:
+            submission_code_file.write(config["submission_content"])
+        try:
+            compile_process = isolate.execute_command_subprocess(info.compile_command(config["submission_code_path"]), time_limit=10, check=False, verbose=True)
+            compile_process.check_returncode()
+            config['status'] = 'loaded'
+            config['submission_binary_path'] = os.path.join("submission", info.name_binary(config['submission_content']))
+            return {"status": "CC"}
+        except isolate.subprocess.TimeoutExpired:
+            return {"status": "CE", "message": "Compilation Timed Out"}
+        except:
+            return {"status": "CE", "message": info.compile_error_message(compile_process.stdout, compile_process.stderr)}
+    except Exception as e:
+        return {"status": "CE", "message": "Error while compiling: {0}".format(str(e))}
 
 @app.route('/run', methods=["POST"])
 def run():

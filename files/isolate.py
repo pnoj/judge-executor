@@ -17,12 +17,15 @@ def cleanup():
     execute_command_subprocess(['isolate', '--cleanup'])
 
 def execute_command(command, real_directory, virtual_directory, stdin, stdout, stderr, meta, time_limit=1, memory_limit=64, env=dict(), verbose=False):
-    process_result = execute_command_subprocess(['isolate'] + ['--env={0}={1}'.format(i, env[i]) for i in env] + ['--dir={0}={1}:rw'.format(virtual_directory, os.path.join(real_directory, "isolate")), '--cg', '--wall-time='+str(time_limit), '--cg-mem='+str(int(memory_limit*1024)), '--stdin='+stdin, '--stdout='+stdout, '--stderr='+stderr, '--meta='+os.path.join(real_directory, "meta"), '--run', '--'] + command, check=False, verbose=verbose)
+    if hasattr(info, "override_isolate_command"):
+        process_result = execute_command_subprocess(info.override_isolate_command(command, real_directory, virtual_directory, stdin, stdout, stderr, meta, time_limit, memory_limit, env), check=False, verbose=verbose)
+    else:
+        process_result = execute_command_subprocess(['isolate'] + ['--env={0}={1}'.format(i, env[i]) for i in env] + ['--dir={0}={1}:rw'.format(virtual_directory, os.path.join(real_directory, "isolate")), '--cg', '--wall-time='+str(time_limit), '--cg-mem='+str(int(memory_limit*1024)), '--stdin='+stdin, '--stdout='+stdout, '--stderr='+stderr, '--meta='+os.path.join(real_directory, "meta"), '--run', '--'] + command, check=False, verbose=verbose)
     if verbose:
         print(process_result.stdout)
         print(process_result.stderr)
 
-def run(program_path, stdin, time_limit, memory_limit, env=dict(), isolate_dir=None):
+def run(program_path, stdin, time_limit, memory_limit, env=dict(), isolate_dir=None, verbose=False):
     cleanup()
 
     setup()
@@ -46,7 +49,7 @@ def run(program_path, stdin, time_limit, memory_limit, env=dict(), isolate_dir=N
         with open(os.path.join(isolate_dir, "isolate", "in"), "w") as stdin_file:
             stdin_file.write(stdin)
 
-    execute_command(info.run_command(os.path.join("/app", os.path.basename(program_path))), isolate_dir, "/app", "/app/in", "/app/out", "/app/err", "/app/meta", time_limit, memory_limit, env)
+    execute_command(info.run_command(os.path.join("/app", os.path.basename(program_path))), isolate_dir, "/app", "/app/in", "/app/out", "/app/err", "/app/meta", time_limit, memory_limit, env, verbose=verbose)
 
     with open(os.path.join(isolate_dir, "isolate", "out"), "r") as stdout_file:
         stdout = stdout_file.read()
