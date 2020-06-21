@@ -1,0 +1,28 @@
+name: build-python3
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'files/*'
+      - 'runtimes/python3/*'
+      - '.github/workflows/build-python3.yml'
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Copy files
+        run: cp files/* runtimes/python3/
+      - name: Build Image
+        uses: docker/build-push-action@v1.0.1
+        with:
+          repository: pnoj/executor-python3
+          path: runtimes/python3
+          add_git_labels: true
+          tag_with_sha: true
+          tags: latest
+          push: true
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}

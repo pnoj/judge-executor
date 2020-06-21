@@ -1,0 +1,28 @@
+name: build-LANG
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'files/*'
+      - 'runtimes/LANG/*'
+      - '.github/workflows/build-LANG.yml'
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Copy files
+        run: cp files/* runtimes/LANG/
+      - name: Build Image
+        uses: docker/build-push-action@v1.0.1
+        with:
+          repository: pnoj/executor-LANG
+          path: runtimes/LANG
+          add_git_labels: true
+          tag_with_sha: true
+          tags: latest
+          push: true
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}

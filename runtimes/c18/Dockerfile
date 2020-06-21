@@ -10,10 +10,11 @@ COPY --from=0 /usr/local/bin/isolate-check-environment /usr/local/bin/
 COPY --from=0 /usr/local/bin/isolate /usr/local/bin/
 COPY --from=0 /usr/local/etc/isolate /usr/local/etc/
 RUN apk add --no-cache libcap
-RUN apk add --no-cache gcc libc-dev
 WORKDIR /app
-COPY . /app
+COPY ./requirements.txt /app
 RUN pip install --trusted-host pypi.python.org -r requirements.txt
+RUN apk add --no-cache gcc libc-dev
+COPY . /app
 
 EXPOSE 8000
 ENTRYPOINT ["gunicorn", "-w", "1", "-b", "0.0.0.0:8000", "app:app"]
