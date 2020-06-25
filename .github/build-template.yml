@@ -8,12 +8,12 @@ on:
       - 'runtimes/LANG/*'
       - '.github/workflows/build-LANG.yml'
 jobs:
-  build:
-    name: build
+  build-LANG:
+    name: build-LANG
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Copy files
+      - name: Copy Files
         run: cp files/* runtimes/LANG/
       - name: Build Image
         uses: docker/build-push-action@v1.0.1

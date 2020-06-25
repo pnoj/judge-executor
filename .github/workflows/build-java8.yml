@@ -8,12 +8,12 @@ on:
       - 'runtimes/java8/*'
       - '.github/workflows/build-java8.yml'
 jobs:
-  build:
-    name: build
+  build-java8:
+    name: build-java8
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Copy files
+      - name: Copy Files
         run: cp files/* runtimes/java8/
       - name: Build Image
         uses: docker/build-push-action@v1.0.1

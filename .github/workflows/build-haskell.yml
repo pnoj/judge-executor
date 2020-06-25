@@ -8,12 +8,12 @@ on:
       - 'runtimes/haskell/*'
       - '.github/workflows/build-haskell.yml'
 jobs:
-  build:
-    name: build
+  build-haskell:
+    name: build-haskell
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Copy files
+      - name: Copy Files
         run: cp files/* runtimes/haskell/
       - name: Build Image
         uses: docker/build-push-action@v1.0.1

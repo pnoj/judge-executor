@@ -8,12 +8,12 @@ on:
       - 'runtimes/brainfuck/*'
       - '.github/workflows/build-brainfuck.yml'
 jobs:
-  build:
-    name: build
+  build-brainfuck:
+    name: build-brainfuck
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Copy files
+      - name: Copy Files
         run: cp files/* runtimes/brainfuck/
       - name: Build Image
         uses: docker/build-push-action@v1.0.1

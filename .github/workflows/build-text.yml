@@ -8,12 +8,12 @@ on:
       - 'runtimes/text/*'
       - '.github/workflows/build-text.yml'
 jobs:
-  build:
-    name: build
+  build-text:
+    name: build-text
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Copy files
+      - name: Copy Files
         run: cp files/* runtimes/text/
       - name: Build Image
         uses: docker/build-push-action@v1.0.1

@@ -8,12 +8,12 @@ on:
       - 'runtimes/java11/*'
       - '.github/workflows/build-java11.yml'
 jobs:
-  build:
-    name: build
+  build-java11:
+    name: build-java11
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Copy files
+      - name: Copy Files
         run: cp files/* runtimes/java11/
       - name: Build Image
         uses: docker/build-push-action@v1.0.1
