@@ -2,6 +2,9 @@ import shutil
 import subprocess
 import os
 
+def get_box_id():
+    return int(os.environ['ISOLATE_BOX_ID'])
+
 def execute_command_subprocess(command, time_limit=None, check=True, verbose=False):
     if verbose:
         print(' '.join(command))
@@ -31,6 +34,6 @@ def find_executable():
 def override_isolate_command(command, real_directory, virtual_directory, stdin, stdout, stderr, meta, time_limit=1, memory_limit=64, env=dict()):
     execute_command_subprocess(compile_command("/isolate/isolate/submission.bf", memory_limit), time_limit=12, check=True)
     os.chmod("/isolate/isolate/submission", 0o777)
-    return ['isolate'] + ['--env={0}={1}'.format(i, env[i]) for i in env] + ['--dir={0}={1}:rw'.format(virtual_directory, os.path.join(real_directory, "isolate")), '--cg', '--wall-time='+str(time_limit), '--stdin='+stdin, '--stdout='+stdout, '--stderr='+stderr, '--meta='+os.path.join(real_directory, "meta"), '--run', '--', "/app/submission"]
+    return ['isolate'] + ['--env={0}={1}'.format(i, env[i]) for i in env] + ['--dir={0}={1}:rw'.format(virtual_directory, os.path.join(real_directory, "isolate")), '--cg', '--wall-time='+str(time_limit), '--stdin='+stdin, '--stdout='+stdout, '--stderr='+stderr, '--meta='+os.path.join(real_directory, "meta"), f'--box-id', f'{get_box_id()}', '--run', '--', "/app/submission"]
 
 language = "brainfuck"

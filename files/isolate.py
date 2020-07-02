@@ -5,22 +5,25 @@ import sys
 
 import info
 
+def get_box_id():
+    return int(os.environ['ISOLATE_BOX_ID'])
+
 def execute_command_subprocess(command, time_limit=None, check=True, verbose=False):
     if verbose:
         print(' '.join(command))
     return subprocess.run(command, capture_output=True, timeout=time_limit, text=True, check=check)
 
 def setup():
-    execute_command_subprocess(['isolate', '--cg', '--init'])
+    execute_command_subprocess(['isolate', '--cg', '--init', f'--box-id', f'{get_box_id()}'])
 
 def cleanup():
-    execute_command_subprocess(['isolate', '--cleanup'])
+    execute_command_subprocess(['isolate', '--cleanup', f'--box-id', f'{get_box_id()}'])
 
 def execute_command(command, real_directory, virtual_directory, stdin, stdout, stderr, meta, time_limit=1, memory_limit=64, env=dict(), verbose=False):
     if hasattr(info, "override_isolate_command"):
         process_result = execute_command_subprocess(info.override_isolate_command(command, real_directory, virtual_directory, stdin, stdout, stderr, meta, time_limit, memory_limit, env), check=False, verbose=verbose)
     else:
-        process_result = execute_command_subprocess(['isolate'] + ['--env={0}={1}'.format(i, env[i]) for i in env] + ['--dir={0}={1}:rw'.format(virtual_directory, os.path.join(real_directory, "isolate")), '--cg', '--wall-time='+str(time_limit), '--cg-mem='+str(int(memory_limit*1024)), '--stdin='+stdin, '--stdout='+stdout, '--stderr='+stderr, '--meta='+os.path.join(real_directory, "meta"), '--run', '--'] + command, check=False, verbose=verbose)
+        process_result = execute_command_subprocess(['isolate'] + ['--env={0}={1}'.format(i, env[i]) for i in env] + ['--dir={0}={1}:rw'.format(virtual_directory, os.path.join(real_directory, "isolate")), '--cg', '--wall-time='+str(time_limit), '--cg-mem='+str(int(memory_limit*1024)), '--stdin='+stdin, '--stdout='+stdout, '--stderr='+stderr, '--meta='+os.path.join(real_directory, "meta"), f'--box-id', f'{get_box_id()}', '--run', '--'] + command, check=False, verbose=verbose)
     if verbose:
         print(process_result.stdout)
         print(process_result.stderr)
